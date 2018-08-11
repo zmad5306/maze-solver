@@ -4,3 +4,4 @@ js/ts.js
 .vscode
 dist
 coverage
+tiny*.png

@@ -58,33 +58,21 @@ function getOpenAdjecents(block: Block): Array<Block> {
 }
 
 function writeWinningImage(path: Array<Block>) {
-    const outputData = [...data];
-    let newPng = new PNG({
-        width: outputData[0].length, 
-        height: outputData.length
-    } as PNGOptions);
-    for (let h = 0; h < outputData.length; h++) {
-        const line = outputData[h];
-        for (let w = 0; w < line.length; w++) {
-            const position = newPng.width * h + w;
-            const i = position << 2;
-            let inPath = false;
-            path.forEach(b => {
-                if (b.x === w && b.y === h) {
-                    inPath = true;
-                }
-            });
-            if (inPath) {
-                newPng.data[i] = 124;
-            } else if (outputData[h][w].open) {
-                newPng.data[i] = 0xff;
-            } else {
-                newPng.data[i] = 0x00;
-            }
-        }
-    }
+    const src = createReadStream('src/tiny.png');
+    const srcPng = new PNG({} as PNGOptions);
 
-    newPng.pack().pipe(createWriteStream(`src/tiny${new Date().getTime().toString()}.png`));
+    srcPng.on('parsed', () => {
+        const png = new PNG({ width: srcPng.width, height: srcPng.height} as PNGOptions);
+        png.data = srcPng.data;
+        path.forEach(b => {
+            const position = png.width * b.y + b.x;
+            const i = position << 2;
+            png.data[i] = 124;
+        });
+        png.pack().pipe(createWriteStream(`src/tiny${new Date().getTime().toString()}.png`)); 
+    });
+    
+    src.pipe(srcPng);
 }
 
 function findPath(block: Block, path: Array<Block> = []): void {
