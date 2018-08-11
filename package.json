@@ -4,7 +4,8 @@
   "description": "solve mazes",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "ts-node src/index.ts"
   },
   "repository": {
     "type": "git",
@@ -15,5 +16,14 @@
   "bugs": {
     "url": "https://github.com/zmad5306/maze-solver/issues"
   },
-  "homepage": "https://github.com/zmad5306/maze-solver#readme"
+  "homepage": "https://github.com/zmad5306/maze-solver#readme",
+  "dependencies": {
+    "@types/node": "^10.5.7",
+    "@types/pngjs": "^3.3.2",
+    "file-system": "^2.2.2",
+    "pngjs": "^3.3.3"
+  },
+  "devDependencies": {
+    "ts-node": "^7.0.0"
+  }
 }
