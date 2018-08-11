@@ -1,6 +1,5 @@
-import { readFile, createReadStream, createWriteStream } from 'fs';
+import { createReadStream, createWriteStream } from 'fs';
 import { PNG, PNGOptions } from 'pngjs';
-import { on } from 'cluster';
 
 // the model object
 class Block {
