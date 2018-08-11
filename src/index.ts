@@ -1,8 +1,9 @@
-import { readFile, createReadStream } from 'fs';
+import { readFile, createReadStream, createWriteStream } from 'fs';
 import { PNG, PNGOptions } from 'pngjs';
+import { on } from 'cluster';
 
 class Block {
-    constructor(readonly open: Boolean, readonly x: number, readonly y: number, public inspected: Boolean = false) {};
+    constructor(readonly open: Boolean, readonly x: number, readonly y: number) {};
 }
 
 const src = createReadStream('src/tiny.png');
@@ -57,7 +58,33 @@ function getOpenAdjecents(block: Block): Array<Block> {
 }
 
 function writeWinningImage(path: Array<Block>) {
+    const outputData = [...data];
+    let newPng = new PNG({
+        width: outputData[0].length, 
+        height: outputData.length
+    } as PNGOptions);
+    for (let h = 0; h < outputData.length; h++) {
+        const line = outputData[h];
+        for (let w = 0; w < line.length; w++) {
+            const position = newPng.width * h + w;
+            const i = position << 2;
+            let inPath = false;
+            path.forEach(b => {
+                if (b.x === w && b.y === h) {
+                    inPath = true;
+                }
+            });
+            if (inPath) {
+                newPng.data[i] = 124;
+            } else if (outputData[h][w].open) {
+                newPng.data[i] = 0xff;
+            } else {
+                newPng.data[i] = 0x00;
+            }
+        }
+    }
 
+    newPng.pack().pipe(createWriteStream(`src/tiny${new Date().getTime().toString()}.png`));
 }
 
 function findPath(block: Block, path: Array<Block> = []): void {
