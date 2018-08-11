@@ -6,7 +6,8 @@ class Block {
     constructor(readonly open: Boolean, readonly x: number, readonly y: number) {};
 }
 
-const src = createReadStream('src/tiny.png');
+const args = process.argv.slice(2);
+const src = createReadStream(args[0]);
 const png = new PNG({} as PNGOptions);
 const data = new Array<Array<Block>>();
 const paths = new Array<Array<Block>>();
@@ -58,7 +59,7 @@ function getOpenAdjecents(block: Block): Array<Block> {
 }
 
 function writeWinningImage(path: Array<Block>) {
-    const src = createReadStream('src/tiny.png');
+    const src = createReadStream(args[0]);
     const srcPng = new PNG({} as PNGOptions);
 
     srcPng.on('parsed', () => {
@@ -69,7 +70,7 @@ function writeWinningImage(path: Array<Block>) {
             const i = position << 2;
             png.data[i] = 124;
         });
-        png.pack().pipe(createWriteStream(`src/tiny${Math.floor(Math.random() * (999999999 - 100000000) ) + 100000000}.png`)); 
+        png.pack().pipe(createWriteStream(`winners/${Math.floor(Math.random() * (999999999 - 100000000) ) + 100000000}.png`)); 
     });
     
     src.pipe(srcPng);
