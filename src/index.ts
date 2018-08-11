@@ -69,7 +69,7 @@ function writeWinningImage(path: Array<Block>) {
             const i = position << 2;
             png.data[i] = 124;
         });
-        png.pack().pipe(createWriteStream(`src/tiny${new Date().getTime().toString()}.png`)); 
+        png.pack().pipe(createWriteStream(`src/tiny${Math.floor(Math.random() * (999999999 - 100000000) ) + 100000000}.png`)); 
     });
     
     src.pipe(srcPng);
@@ -88,7 +88,7 @@ function findPath(block: Block, path: Array<Block> = []): void {
     if (adjecents.length > 0) {
         const adjecent = adjecents[0];
         if (path.indexOf(adjecent) === -1) {
-            findPath(adjecents[0], path);
+            findPath(adjecents[0], [...path]);
         }
     }
     if (adjecents.length > 1) {
