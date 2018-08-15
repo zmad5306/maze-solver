@@ -67,6 +67,10 @@ function countOpenSiblings(y: number, x: number): number {
     return openSiblings;
 }
 
+function addPoint(y: number, x: number) {
+    console.log(`point found at y: ${y} x: ${x}`);
+}
+
 for (let y = 0; y < tinyMaze.length; y++) {
     const row = tinyMaze[y];
     for (let x = 0; x < row.length; x++) {
@@ -75,19 +79,19 @@ for (let y = 0; y < tinyMaze.length; y++) {
         // first row, entry
         if (open && y === 0 && openSouth(y, x)) {
             points++;
-            console.log(`point found at y: ${y} x: ${x}`);    
+            addPoint(y, x);
         } 
         
         // last row exit
         else if (open && y === tinyMaze.length - 1 && openNorth(y, x)) {
             points++;
-            console.log(`point found at y: ${y} x: ${x}`);    
+            addPoint(y, x);
         } 
         
         // middle rows
         else if (open && countOpenSiblings(y, x) > 0) {
             points++;
-            console.log(`point found at y: ${y} x: ${x}`);    
+            addPoint(y, x);
         }
     }
 }
