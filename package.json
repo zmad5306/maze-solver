@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node src/index.ts mazes/normal.png"
+    "start": "ts-node src/graph.ts mazes/tiny.png"
   },
   "repository": {
     "type": "git",
