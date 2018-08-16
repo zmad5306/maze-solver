@@ -39,12 +39,16 @@ function countOpenSiblings(y: number, x: number, width: number, data: Buffer): n
     return openSiblings;
 }
 
+export class Point {
+    constructor(readonly y: number, readonly x: number) {}
+}
+
 export class Maze {
 
-    public points: number;
+    readonly points: Array<Point>;
 
     constructor(readonly width: number, readonly height: number, private data: Buffer) {
-        this.points = 0;
+        this.points = new Array<Point>();
         for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++) {
                 const position = width * y + x;
@@ -53,19 +57,16 @@ export class Maze {
 
                 // first row, entry
                 if (open && y === 0 && openSouth(y, x, width, data)) {
-                    this.points++;
                     this.addPoint(y, x);
                 } 
                 
                 // last row, exit
                 else if (open && y === height - 1 && openNorth(y, x, width, data)) {
-                    this.points++;
                     this.addPoint(y, x);
                 } 
                 
                 // middle rows
                 else if (open && countOpenSiblings(y, x, width, data) > 0) {
-                    this.points++;
                     this.addPoint(y, x);
                 }
             }
@@ -74,5 +75,6 @@ export class Maze {
 
     private addPoint(y: number, x: number) {
         console.log(`point found at y: ${y} x: ${x}`);
+        this.points.push(new Point(y, x));
     }
 }
