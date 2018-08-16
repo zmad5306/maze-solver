@@ -82,7 +82,7 @@ for (let y = 0; y < tinyMaze.length; y++) {
             addPoint(y, x);
         } 
         
-        // last row exit
+        // last row, exit
         else if (open && y === tinyMaze.length - 1 && openNorth(y, x)) {
             points++;
             addPoint(y, x);
