@@ -1,5 +1,5 @@
 import { Maze } from './maze';
-import {PngWrapper, pngFactory} from './png-utils';
+import { pngFactory } from './png-utils';
 
 const args = process.argv.slice(2);
 const path = args[0];
