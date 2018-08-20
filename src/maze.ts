@@ -1,48 +1,3 @@
-const black = 255;
-
-function pos(y: number, x: number, width: number): number {
-    const position = width * y + x;
-    return position << 2;
-}
-
-function openNorth(y: number, x: number, width: number, data: Buffer): boolean {
-    return data[pos(y - 1, x, width)] === black;
-}
-
-function openSouth(y: number, x: number, width: number, data: Buffer): boolean {
-    return data[pos(y + 1, x, width)] === black;
-}
-
-function openEast(y: number, x: number, width: number, data: Buffer): boolean {
-    return data[pos(y, x + 1, width)] === black;
-}
-
-function openWest(y: number, x: number, width: number, data: Buffer): boolean {
-    return data[pos(y, x - 1, width)] === black;
-}
-
-function adjecentOpenings(y: number, x: number, width: number, data: Buffer): number {
-    let adjecentOpenings = 0;
-    const on = openNorth(y, x, width, data);
-    const os = openSouth(y, x, width, data);
-    const oe = openEast(y, x, width, data);
-    const ow = openWest(y, x, width, data);
-
-    // two adjecent sides open (90 degree angle)
-    if (on && ow) adjecentOpenings++;
-    if (on && oe) adjecentOpenings++;
-    if (os && ow) adjecentOpenings++;
-    if (os && oe) adjecentOpenings++;
-
-    // all adjecent sides closed but one
-    if (on && !os && !oe && !ow) adjecentOpenings++;
-    if (!on && os && !oe && !ow) adjecentOpenings++;
-    if (!on && !os && oe && !ow) adjecentOpenings++;
-    if (!on && !os && !oe && ow) adjecentOpenings++;
-
-    return adjecentOpenings;
-}
-
 export class Point {
     constructor(readonly y: number, readonly x: number) {}
 }
@@ -50,6 +5,7 @@ export class Point {
 export class Maze {
 
     readonly points: Array<Point>;
+    readonly black = 255;
 
     constructor(readonly width: number, readonly height: number, private data: Buffer) {
         this.points = new Array<Point>();
@@ -60,21 +16,64 @@ export class Maze {
                 const open = data[i] === 255;
 
                 // first row, entry
-                if (open && y === 0 && openSouth(y, x, width, data)) {
+                if (open && y === 0 && this.openSouth(y, x, width, data)) {
                     this.addPoint(y, x);
                 } 
                 
                 // last row, exit
-                else if (open && y === height - 1 && openNorth(y, x, width, data)) {
+                else if (open && y === height - 1 && this.openNorth(y, x, width, data)) {
                     this.addPoint(y, x);
                 } 
                 
                 // middle rows
-                else if (open && adjecentOpenings(y, x, width, data) > 0) {
+                else if (open && this.adjecentOpenings(y, x, width, data) > 0) {
                     this.addPoint(y, x);
                 }
             }
         }
+    }
+
+    private pos(y: number, x: number, width: number): number {
+        const position = width * y + x;
+        return position << 2;
+    }
+
+    private openNorth(y: number, x: number, width: number, data: Buffer): boolean {
+        return data[this.pos(y - 1, x, width)] === this.black;
+    }
+
+    private openSouth(y: number, x: number, width: number, data: Buffer): boolean {
+        return data[this.pos(y + 1, x, width)] === this.black;
+    }
+
+    private openEast(y: number, x: number, width: number, data: Buffer): boolean {
+        return data[this.pos(y, x + 1, width)] === this.black;
+    }
+
+    private openWest(y: number, x: number, width: number, data: Buffer): boolean {
+        return data[this.pos(y, x - 1, width)] === this.black;
+    }
+
+    private adjecentOpenings(y: number, x: number, width: number, data: Buffer): number {
+        let adjecentOpenings = 0;
+        const on = this.openNorth(y, x, width, data);
+        const os = this.openSouth(y, x, width, data);
+        const oe = this.openEast(y, x, width, data);
+        const ow = this.openWest(y, x, width, data);
+
+        // two adjecent sides open (90 degree angle)
+        if (on && ow) adjecentOpenings++;
+        if (on && oe) adjecentOpenings++;
+        if (os && ow) adjecentOpenings++;
+        if (os && oe) adjecentOpenings++;
+
+        // all adjecent sides closed but one
+        if (on && !os && !oe && !ow) adjecentOpenings++;
+        if (!on && os && !oe && !ow) adjecentOpenings++;
+        if (!on && !os && oe && !ow) adjecentOpenings++;
+        if (!on && !os && !oe && ow) adjecentOpenings++;
+
+        return adjecentOpenings;
     }
 
     private addPoint(y: number, x: number) {
