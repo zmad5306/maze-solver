@@ -1,14 +1,18 @@
+export class Intersection {
+    constructor(readonly intersectPoint: Point) {}
+}
+
 export class Point {
     constructor(readonly y: number, readonly x: number) {}
 }
 
 export class Maze {
 
-    readonly points: Array<Point>;
+    readonly intersections: Array<Intersection>;
     readonly black = 255;
 
     constructor(readonly width: number, readonly height: number, private data: Buffer) {
-        this.points = new Array<Point>();
+        this.intersections = new Array<Intersection>();
         for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++) {
                 const position = width * y + x;
@@ -17,17 +21,17 @@ export class Maze {
 
                 // first row, entry
                 if (open && y === 0 && this.openSouth(y, x, width, data)) {
-                    this.addPoint(y, x);
+                    this.addIntersection(y, x);
                 } 
                 
                 // last row, exit
                 else if (open && y === height - 1 && this.openNorth(y, x, width, data)) {
-                    this.addPoint(y, x);
+                    this.addIntersection(y, x);
                 } 
                 
                 // middle rows
                 else if (open && this.adjecentOpenings(y, x, width, data) > 0) {
-                    this.addPoint(y, x);
+                    this.addIntersection(y, x);
                 }
             }
         }
@@ -55,11 +59,12 @@ export class Maze {
     }
 
     private adjecentOpenings(y: number, x: number, width: number, data: Buffer): number {
-        let adjecentOpenings = 0;
         const on = this.openNorth(y, x, width, data);
         const os = this.openSouth(y, x, width, data);
         const oe = this.openEast(y, x, width, data);
         const ow = this.openWest(y, x, width, data);
+
+        let adjecentOpenings = 0;
 
         // two adjecent sides open (90 degree angle)
         if (on && ow) adjecentOpenings++;
@@ -76,8 +81,8 @@ export class Maze {
         return adjecentOpenings;
     }
 
-    private addPoint(y: number, x: number) {
-        console.log(`point found at y: ${y} x: ${x}`);
-        this.points.push(new Point(y, x));
+    private addIntersection(y: number, x: number) {
+        console.log(`intersection found at y: ${y} x: ${x}`);
+        this.intersections.push(new Intersection(new Point(y, x)));
     }
 }
