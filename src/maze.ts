@@ -23,18 +23,22 @@ function openWest(y: number, x: number, width: number, data: Buffer): boolean {
 
 function adjecentOpenings(y: number, x: number, width: number, data: Buffer): number {
     let adjecentOpenings = 0;
+    const on = openNorth(y, x, width, data);
+    const os = openSouth(y, x, width, data);
+    const oe = openEast(y, x, width, data);
+    const ow = openWest(y, x, width, data);
 
     // two adjecent sides open (90 degree angle)
-    if (openNorth(y, x, width, data) && openWest(y, x, width, data)) adjecentOpenings++;
-    if (openNorth(y, x, width, data) && openEast(y, x, width, data)) adjecentOpenings++;
-    if (openSouth(y, x, width, data) && openWest(y, x, width, data)) adjecentOpenings++;
-    if (openSouth(y, x, width, data) && openEast(y, x, width, data)) adjecentOpenings++;
+    if (on && ow) adjecentOpenings++;
+    if (on && oe) adjecentOpenings++;
+    if (os && ow) adjecentOpenings++;
+    if (os && oe) adjecentOpenings++;
 
     // all adjecent sides closed but one
-    if (openNorth(y, x, width, data) && !openSouth(y, x, width, data) && !openEast(y, x, width, data) && !openWest(y, x, width, data)) adjecentOpenings++;
-    if (!openNorth(y, x, width, data) && openSouth(y, x, width, data) && !openEast(y, x, width, data) && !openWest(y, x, width, data)) adjecentOpenings++;
-    if (!openNorth(y, x, width, data) && !openSouth(y, x, width, data) && openEast(y, x, width, data) && !openWest(y, x, width, data)) adjecentOpenings++;
-    if (!openNorth(y, x, width, data) && !openSouth(y, x, width, data) && !openEast(y, x, width, data) && openWest(y, x, width, data)) adjecentOpenings++;
+    if (on && !os && !oe && !ow) adjecentOpenings++;
+    if (!on && os && !oe && !ow) adjecentOpenings++;
+    if (!on && !os && oe && !ow) adjecentOpenings++;
+    if (!on && !os && !oe && ow) adjecentOpenings++;
 
     return adjecentOpenings;
 }
