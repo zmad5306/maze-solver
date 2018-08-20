@@ -19,22 +19,37 @@ export class Maze {
                 const i = position << 2;
                 const open = data[i] === 255;
 
+                const openings = this.getOpenings(y, x, width, data);
+
                 // first row, entry
-                if (open && y === 0 && this.openSouth(y, x, width, data)) {
+                if (open && y === 0 && openings[1]) {
                     this.addIntersection(y, x);
                 } 
                 
                 // last row, exit
-                else if (open && y === height - 1 && this.openNorth(y, x, width, data)) {
+                else if (open && y === height - 1 && openings[0]) {
                     this.addIntersection(y, x);
                 } 
                 
                 // middle rows
-                else if (open && this.adjecentOpenings(y, x, width, data) > 0) {
+                else if (open && this.hasAdjecent(openings)) {
                     this.addIntersection(y, x);
                 }
             }
         }
+    }
+
+    private hasAdjecent(openings: Array<Boolean>): Boolean {
+        const on = openings[0];
+        const os = openings[1];
+        const oe = openings[2];
+        const ow = openings[3];
+
+         // two adjecent sides open (90 degree angle)
+         if (on && ow || on && oe || os && ow || os && oe) return true;
+         // all adjecent sides closed but one
+         else if (on && !os && !oe && !ow || !on && os && !oe && !ow || !on && !os && oe && !ow || !on && !os && !oe && ow) return true;
+         else return false;
     }
 
     private pos(y: number, x: number, width: number): number {
@@ -58,27 +73,13 @@ export class Maze {
         return data[this.pos(y, x - 1, width)] === this.black;
     }
 
-    private adjecentOpenings(y: number, x: number, width: number, data: Buffer): number {
+    private getOpenings(y: number, x: number, width: number, data: Buffer): Array<Boolean> {
         const on = this.openNorth(y, x, width, data);
         const os = this.openSouth(y, x, width, data);
         const oe = this.openEast(y, x, width, data);
         const ow = this.openWest(y, x, width, data);
-
-        let adjecentOpenings = 0;
-
-        // two adjecent sides open (90 degree angle)
-        if (on && ow) adjecentOpenings++;
-        if (on && oe) adjecentOpenings++;
-        if (os && ow) adjecentOpenings++;
-        if (os && oe) adjecentOpenings++;
-
-        // all adjecent sides closed but one
-        if (on && !os && !oe && !ow) adjecentOpenings++;
-        if (!on && os && !oe && !ow) adjecentOpenings++;
-        if (!on && !os && oe && !ow) adjecentOpenings++;
-        if (!on && !os && !oe && ow) adjecentOpenings++;
-
-        return adjecentOpenings;
+        //north, south, east, west
+        return [on, os, oe, ow];
     }
 
     private addIntersection(y: number, x: number) {
