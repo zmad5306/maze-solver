@@ -20,24 +20,28 @@ export class Maze {
                 const open = data[i] === 255;
 
                 const openings = this.getOpenings(y, x, width, data);
-                const openNorth = openings[0];
-                const openSouth = openings[1];
-
-                // first row, entry
-                if (open && y === 0 && openSouth) {
-                    this.addIntersection(y, x);
-                } 
-                
-                // last row, exit
-                else if (open && y === height - 1 && openNorth) {
-                    this.addIntersection(y, x);
-                } 
-                
-                // middle rows
-                else if (open && this.hasAdjecent(openings)) {
-                    this.addIntersection(y, x);
-                }
+                this.addIntersections(y, x, height, open, openings);
             }
+        }
+    }
+
+    private addIntersections(y: number, x: number, height: number, open: Boolean, openings: Array<Boolean>): void {
+        const openNorth = openings[0];
+        const openSouth = openings[1];
+
+        // first row, entry
+        if (open && y === 0 && openSouth) {
+            this.addIntersection(y, x);
+        } 
+        
+        // last row, exit
+        else if (open && y === height - 1 && openNorth) {
+            this.addIntersection(y, x);
+        } 
+        
+        // middle rows
+        else if (open && this.hasAdjecent(openings)) {
+            this.addIntersection(y, x);
         }
     }
 
