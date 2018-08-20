@@ -20,14 +20,16 @@ export class Maze {
                 const open = data[i] === 255;
 
                 const openings = this.getOpenings(y, x, width, data);
+                const openNorth = openings[0];
+                const openSouth = openings[1];
 
                 // first row, entry
-                if (open && y === 0 && openings[1]) {
+                if (open && y === 0 && openSouth) {
                     this.addIntersection(y, x);
                 } 
                 
                 // last row, exit
-                else if (open && y === height - 1 && openings[0]) {
+                else if (open && y === height - 1 && openNorth) {
                     this.addIntersection(y, x);
                 } 
                 
@@ -40,16 +42,31 @@ export class Maze {
     }
 
     private hasAdjecent(openings: Array<Boolean>): Boolean {
-        const on = openings[0];
-        const os = openings[1];
-        const oe = openings[2];
-        const ow = openings[3];
+        const openNorth = openings[0];
+        const openSouth = openings[1];
+        const openEast = openings[2];
+        const openWest = openings[3];
 
          // two adjecent sides open (90 degree angle)
-         if (on && ow || on && oe || os && ow || os && oe) return true;
+         if (
+             openNorth && openWest || 
+             openNorth && openEast || 
+             openSouth && openWest || 
+             openSouth && openEast
+            )  {
+                return true;
+            }
          // all adjecent sides closed but one
-         else if (on && !os && !oe && !ow || !on && os && !oe && !ow || !on && !os && oe && !ow || !on && !os && !oe && ow) return true;
-         else return false;
+         else if (
+             openNorth && !openSouth && !openEast && !openWest || 
+             !openNorth && openSouth && !openEast && !openWest || 
+             !openNorth && !openSouth && openEast && !openWest || 
+             !openNorth && !openSouth && !openEast && openWest) {
+                 return true;
+             }
+         else {
+             return false;
+         }
     }
 
     private pos(y: number, x: number, width: number): number {
@@ -74,12 +91,12 @@ export class Maze {
     }
 
     private getOpenings(y: number, x: number, width: number, data: Buffer): Array<Boolean> {
-        const on = this.openNorth(y, x, width, data);
-        const os = this.openSouth(y, x, width, data);
-        const oe = this.openEast(y, x, width, data);
-        const ow = this.openWest(y, x, width, data);
+        const openNorth = this.openNorth(y, x, width, data);
+        const openSouth = this.openSouth(y, x, width, data);
+        const openEast = this.openEast(y, x, width, data);
+        const openWest = this.openWest(y, x, width, data);
         //north, south, east, west
-        return [on, os, oe, ow];
+        return [openNorth, openSouth, openEast, openWest];
     }
 
     private addIntersection(y: number, x: number) {
