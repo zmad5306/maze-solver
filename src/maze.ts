@@ -1,5 +1,6 @@
+import { Solver, Solution } from './solver';
 export class Intersection {
-    constructor(readonly intersectPoint: Point) {}
+    constructor(readonly intersectPoint: Point, readonly connections: Array<Intersection | null> = []) {}
 }
 
 export class Point {
@@ -31,18 +32,70 @@ export class Maze {
 
         // first row, entry
         if (open && y === 0 && openSouth) {
-            this.addIntersection(y, x);
+            const intersection = this.addIntersection(y, x);
         } 
         
         // last row, exit
         else if (open && y === height - 1 && openNorth) {
-            this.addIntersection(y, x);
+            const intersection = this.addIntersection(y, x);
+            intersection.connections.push(...this.addConnections(intersection))
         } 
         
         // middle rows
         else if (open && this.hasAdjecent(openings)) {
-            this.addIntersection(y, x);
+            const intersection = this.addIntersection(y, x);
         }
+    }
+
+    private findNorthConnection(intersection: Intersection): Intersection | null {
+        let connectTo: Intersection | null = null;
+        this.intersections.forEach(i => {
+            // it's above
+            if (i.intersectPoint.y < intersection.intersectPoint.y && i.intersectPoint.x === intersection.intersectPoint.x) {
+                // not the first connection
+                if (connectTo != null) {
+                    // this intersection is closer
+                    if (i.intersectPoint.y > connectTo.intersectPoint.y) {
+                        connectTo = i;
+                    }
+                } 
+                // first connection
+                else {
+                    connectTo = i;
+                }
+            }
+        });
+        return connectTo;
+    }
+
+    private findWestConnection(intersection: Intersection): Intersection | null {
+        let connectTo: Intersection | null = null;
+        this.intersections.forEach(i => {
+            // it's left
+            if (i.intersectPoint.x < intersection.intersectPoint.x && i.intersectPoint.y === intersection.intersectPoint.y) {
+                // not the first connection
+                if (connectTo != null) {
+                    // this intersection is closer
+                    if (i.intersectPoint.x > connectTo.intersectPoint.x) {
+                        connectTo = i;
+                    }
+                } 
+                // first connection
+                else {
+                    connectTo = i;
+                }
+            }
+        });
+        return connectTo;
+    }
+
+    private addConnections(intersection: Intersection): Array<Intersection | null> {
+        const connections = new Array<Intersection | null>();
+        connections.push(this.findNorthConnection(intersection)); // n
+        connections.push(null) // s
+        connections.push(null) // e
+        connections.push(this.findWestConnection(intersection)) // w
+        return connections;
     }
 
     private hasAdjecent(openings: Array<Boolean>): Boolean {
@@ -103,8 +156,10 @@ export class Maze {
         return [openNorth, openSouth, openEast, openWest];
     }
 
-    private addIntersection(y: number, x: number) {
+    private addIntersection(y: number, x: number): Intersection {
         console.log(`intersection found at y: ${y} x: ${x}`);
-        this.intersections.push(new Intersection(new Point(y, x)));
+        const intersection = new Intersection(new Point(y, x))
+        this.intersections.push(intersection);
+        return intersection;
     }
 }
