@@ -1,0 +1,60 @@
+# Build results
+bin/
+obj/
+out/
+
+# Visual Studio files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Rider / JetBrains
+.idea/
+
+# VS Code
+.vscode/
+
+# NuGet packages
+*.nupkg
+*.snupkg
+packages/
+*.nuspec
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+
+# Test results
+TestResult*/
+*.trx
+*.coverage
+*.coveragexml
+
+# Build artifacts
+artifacts/
+
+# OS-generated files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+
+# Resharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+
+# Visual Studio cache
+.vs/
+
+# Other tool caches
+*.cache
+*.pdb
+
+# Publish output
+publish/
